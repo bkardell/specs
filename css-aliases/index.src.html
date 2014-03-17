@@ -160,11 +160,15 @@ Script-based Custom Selectors</h3>
 		&lt;/script>
 		</pre>
 
-		""parseArgs" allows you to provide a function taking an args string and specifying how to parse it into arguments that will be passed to the predicate.  Because arguments are specified once, but predicates are called many times, this is highly more efficient.  The default parseArgs function does nothing but return its input.
-
-		"matche"s allows an author to improve efficiency of a filter by basing it off of some simple or compound selector which may natively short circuit the filter's call (see (http://www.w3.org/TR/2013/WD-selectors4-20130502/#compound).  Its value may be a simple or compound selector string or a function which yields the same, and it receives as arguments values from parseArgs, making it possible to create the limiting factor from an argument (capture it).  In the above case, we know that this filter only applies in the event that the specified attribute exists on the element.  If unspecified, this value defaults to "*" which causes every potential match in the tree to call the filter.  Again, because this is determined only once, it can be considerably more efficient and registered with the browser's native indexes to avoid the filter being called.
-
-		"predicate" is the filter function, it must return a boolean value.  It receives a potential match as well as any arguments parsed by parseArgs (thus, if none is provided, it will receive a single string arg).  
+		<ul>
+			<li>parseArgs" allows you to provide a function taking an args string and specifying how to parse it into arguments that will be passed to the predicate.  Because arguments are specified once, but predicates are called many times, this is highly more efficient.  The default parseArgs function does nothing but return its input.
+</li>	
+			<li>"matches" allows an author to improve efficiency of a filter by basing it off of some simple or compound selector which may natively short circuit the filter's call (see (http://www.w3.org/TR/2013/WD-selectors4-20130502/#compound).  Its value may be a simple or compound selector string or a function which yields the same, and it receives as arguments values from parseArgs, making it possible to create the limiting factor from an argument (capture it).  In the above case, we know that this filter only applies in the event that the specified attribute exists on the element.  If unspecified, this value defaults to "*" which causes every potential match in the tree to call the filter.  Again, because this is determined only once, it can be considerably more efficient and registered with the browser's native indexes to avoid the filter being called.
+</li>		
+			<li>"predicate" is the filter function, it must return a boolean value.  It receives a potential match as well as any arguments parsed by parseArgs (thus, if none is provided, it will receive a single string arg).</li>
+		</ul>
+		
+		  
 
 	</div>
 
