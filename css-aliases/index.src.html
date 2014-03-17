@@ -139,26 +139,33 @@ Script-based Custom Selectors</h3>
 
 		<pre>
 		&lt;script>
-		CSS.customSelector.set("_foo",
-			                   {"filter": function(el){...},
-			                   	"matches": "a",
-			                    "examines": "[href]"});
+		/*
+		   Example illustrating creation of a :_num_greaterthan(someAttribute, someNumber)
+		   which would allow a selector only to be true if the named attribute has a 
+		   numeric vaule greater than some specified numeric value.
+		*/
+		CSS.customSelector.set("_num_greaterthan",
+			                   {
+			                   "parseArgs": function (argsString) {
+			                    	var args = argsString.split(",");
+          					return [args[0], parseInt(args[1], 10)];
+			                   },
+			                   "matches": function (attributeName) {
+			                   	return "[" + attributeName + "]";
+			                   },
+			                   "predicate": function(el, attributeName, expectedValue){
+			                   	var instanceValue = parseInt(el.getAttribute(attributeName), 10);
+			                   	return realValue > expectedValue;
+			                   }
 		&lt;/script>
 		</pre>
 
-		"matches" is an optional selector specifying what subset of elements the custom selector is valid for.
-		The selector is automatically false for elements that don't match.
+		""parseArgs" allows you to provide a function taking an args string and specifying how to parse it into arguments that will be passed to the predicate.  Because arguments are specified once, but predicates are called many times, this is highly more efficient.  The default parseArgs function does nothing but return its input.
 
-		"examines" is a list of simple selectors specifying what sort of updates the selector should be called for.
-		In this example, any changes to the <code>href</code> attribute would cause the function to be called.
-		What elements are the "examines" selectors applied to?
-		We probably need a way to manually trigger re-evaluation, too.
-		Is this just sugar over mutation listeners + manual re-evaluation?
+		"matche"s allows an author to improve efficiency of a filter by basing it off of some simple or compound selector which may natively short circuit the filter's call (see (http://www.w3.org/TR/2013/WD-selectors4-20130502/#compound).  Its value may be a simple or compound selector string or a function which yields the same, and it receives as arguments values from parseArgs, making it possible to create the limiting factor from an argument (capture it).  In the above case, we know that this filter only applies in the event that the specified attribute exists on the element.  If unspecified, this value defaults to "*" which causes every potential match in the tree to call the filter.  Again, because this is determined only once, it can be considerably more efficient and registered with the browser's native indexes to avoid the filter being called.
 
-		Maybe let the pseudo-class also accept an argument,
-		and pass it (as a serialized string) as a second argument to the matching function.
-		'':_foo'' would pass <code>null</code>,
-		while '':_foo()'' would pass <code>""</code>.
+		"predicate" is the filter function, it must return a boolean value.  It receives a potential match as well as any arguments parsed by parseArgs (thus, if none is provided, it will receive a single string arg).  
+
 	</div>
 
 <h3 id='custom-selectors-cssom'>
